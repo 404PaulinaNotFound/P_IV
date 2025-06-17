@@ -14,6 +14,7 @@ namespace FinanseApp
         private Button _addButton;
         private TextBox _annualGoalTextBox;
         private TextBlock _monthlyBalanceText;
+        private TextBlock _categoryBreakdownText;
         private TextBlock _errorTextBlock;
         private StackPanel _categoryButtonsPanel;
         private StackPanel _monthButtonsPanel;
@@ -21,6 +22,7 @@ namespace FinanseApp
 
         private Dictionary<string, Dictionary<int, decimal>> _categoryAmounts = new();
         private decimal _savingsGoal = 1000;
+        private TextBlock _savingsProgressText;
         private string _selectedCategory = "Jedzenie";
         private int _selectedMonth = DateTime.Today.Month;
 
@@ -168,6 +170,49 @@ namespace FinanseApp
             _addButton.Click += AddButton_Click;
             mainPanel.Children.Add(_addButton);
 
+// Cel oszczędności
+mainPanel.Children.Add(new TextBlock { Text = "Cel oszczędności:", Margin = new Thickness(5) });
+
+var savingsGoalPanel = new WrapPanel
+{
+    Margin = new Thickness(5),
+    HorizontalAlignment = HorizontalAlignment.Center
+};
+
+for (int i = 500; i <= 10000; i = i == 500 ? 1000 : i + 1000)
+{
+    var button = new Button
+    {
+        Content = $"{i} zł",
+        Tag = i,
+        Padding = new Thickness(5),
+        Width = 80,
+        Margin = new Thickness(5),
+        Background = i == _savingsGoal ? Brushes.LightBlue : Brushes.LightGray
+    };
+
+    button.Click += (_, __) =>
+    {
+        _savingsGoal = Convert.ToDecimal(button.Tag);
+
+        foreach (var child in savingsGoalPanel.Children.OfType<Button>())
+            child.Background = Brushes.LightGray;
+
+        button.Background = Brushes.LightBlue;
+        UpdateBudgetInfo(); 
+    };
+
+    savingsGoalPanel.Children.Add(button);
+}
+
+mainPanel.Children.Add(savingsGoalPanel);
+
+_savingsProgressText = new TextBlock
+{
+    Margin = new Thickness(5),
+    TextWrapping = TextWrapping.Wrap
+};
+mainPanel.Children.Add(_savingsProgressText);
 
             // Wydatki w miesiącu
             _monthlyBalanceText = new TextBlock
@@ -176,7 +221,12 @@ namespace FinanseApp
                 Margin = new Thickness(5)
             };
             mainPanel.Children.Add(_monthlyBalanceText);
-
+    _categoryBreakdownText = new TextBlock
+    {
+    Margin = new Thickness(5),
+    TextWrapping = TextWrapping.Wrap
+    };
+    mainPanel.Children.Add(_categoryBreakdownText);
             // Błędy
             _errorTextBlock = new TextBlock
             {
@@ -224,6 +274,22 @@ namespace FinanseApp
                 .Sum(e => e.Value);
 
             _monthlyBalanceText.Text = $"Wydatki w wybranym miesiącu: {totalSpent:C}";
+            var breakdownLines = _categoryAmounts
+    .Where(kv => kv.Value.ContainsKey(_selectedMonth))
+    .Select(kv => $"{kv.Key}: {kv.Value[_selectedMonth]:C}");
+
+            _categoryBreakdownText.Text = string.Join("\n", breakdownLines);
+
+decimal totalSavings = 0;
+
+if (_categoryAmounts.TryGetValue("Oszczędności", out var savingsByMonth))
+{
+    totalSavings = savingsByMonth.Values.Sum();
+}
+
+decimal percent = _savingsGoal > 0 ? Math.Min(100, (totalSavings / _savingsGoal) * 100) : 0;
+
+_savingsProgressText.Text = $"Zebrano oszczędności: {totalSavings:C} / {_savingsGoal:C} ({percent:F1}%)";
         }
     }
 } 
