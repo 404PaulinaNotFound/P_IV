@@ -23,7 +23,7 @@ namespace FinanseApp
         private Dictionary<string, Dictionary<int, decimal>> _categoryAmounts = new();
         private decimal _savingsGoal = 1000;
         private TextBlock _savingsProgressText;
-        private string _selectedCategory = "Jedzenie";
+        private string _selectedCategory = "Zakupy";
         private int _selectedMonth = DateTime.Today.Month;
 
         public MainWindow()
@@ -59,7 +59,7 @@ namespace FinanseApp
                 Margin = new Thickness(5)
             };
 
-            var categories = new List<string> { "Jedzenie", "Transport", "Rozrywka", "Oszczędności", "Opłaty" };
+            var categories = new List<string> { "Zakupy", "Paliwo", "Rozrywka", "Oszczędności", "Opłaty" };
             foreach (var category in categories)
             {
                 var button = new Button
@@ -163,9 +163,10 @@ namespace FinanseApp
             // Dodaj
             _addButton = new Button
             {
-                Content = "Dodaj",
-                Width = 200,
-                Margin = new Thickness(5)
+                Content = "Dodaj wybraną kwotę",
+                Width = 130,
+                Margin = new Thickness(5),
+                Background = Brushes.White
             };
             _addButton.Click += AddButton_Click;
             mainPanel.Children.Add(_addButton);

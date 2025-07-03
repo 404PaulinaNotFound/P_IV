@@ -1436,11 +1436,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/paulinazdzalik/Desktop/P_IV/FinanseApp/AvaloniaApp.csproj",
+      "projectUniqueName": "/Users/paulinazdzalik/Desktop/P_IV projekt/FinanseApp/AvaloniaApp.csproj",
       "projectName": "AvaloniaApp",
-      "projectPath": "/Users/paulinazdzalik/Desktop/P_IV/FinanseApp/AvaloniaApp.csproj",
+      "projectPath": "/Users/paulinazdzalik/Desktop/P_IV projekt/FinanseApp/AvaloniaApp.csproj",
       "packagesPath": "/Users/paulinazdzalik/.nuget/packages/",
-      "outputPath": "/Users/paulinazdzalik/Desktop/P_IV/FinanseApp/obj/",
+      "outputPath": "/Users/paulinazdzalik/Desktop/P_IV projekt/FinanseApp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/paulinazdzalik/.nuget/NuGet/NuGet.Config"

@@ -15,12 +15,12 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AvaloniaApp
-build_property.ProjectDir = /Users/paulinazdzalik/Desktop/P_IV/FinanseApp/
+build_property.ProjectDir = /Users/paulinazdzalik/Desktop/P_IV projekt/FinanseApp/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 
-[/Users/paulinazdzalik/Desktop/P_IV/FinanseApp/App.axaml]
+[/Users/paulinazdzalik/Desktop/P_IV projekt/FinanseApp/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[/Users/paulinazdzalik/Desktop/P_IV/FinanseApp/MainWindow.axaml]
+[/Users/paulinazdzalik/Desktop/P_IV projekt/FinanseApp/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

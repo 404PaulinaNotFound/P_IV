@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "GkIJLrYwwN8=",
+  "dgSpecHash": "gQw9NYqESyg=",
   "success": true,
-  "projectFilePath": "/Users/paulinazdzalik/Desktop/P_IV/FinanseApp/AvaloniaApp.csproj",
+  "projectFilePath": "/Users/paulinazdzalik/Desktop/P_IV projekt/FinanseApp/AvaloniaApp.csproj",
   "expectedPackageFiles": [
     "/Users/paulinazdzalik/.nuget/packages/avalonia/11.2.7/avalonia.11.2.7.nupkg.sha512",
     "/Users/paulinazdzalik/.nuget/packages/avalonia.angle.windows.natives/2.1.22045.20230930/avalonia.angle.windows.natives.2.1.22045.20230930.nupkg.sha512",
