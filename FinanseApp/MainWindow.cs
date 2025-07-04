@@ -25,7 +25,7 @@ namespace FinanseApp
         private TextBlock _savingsProgressText;
         private string _selectedCategory = "Zakupy";
         private int _selectedMonth = DateTime.Today.Month;
-
+        private Button _removeButton;   
         public MainWindow()
         {
             Width = 400;
@@ -39,6 +39,8 @@ namespace FinanseApp
             };
 
             Content = scrollViewer;
+            LoadDataFromFile();
+            UpdateBudgetInfo();
         }
 
         private Panel CreateMainPanel()
@@ -171,49 +173,61 @@ namespace FinanseApp
             _addButton.Click += AddButton_Click;
             mainPanel.Children.Add(_addButton);
 
-// Cel oszczędności
-mainPanel.Children.Add(new TextBlock { Text = "Cel oszczędności:", Margin = new Thickness(5) });
+            // Usuń
+            _removeButton = new Button
+            {
+                Content = "Usuń wybraną kwotę",
+                Width = 130,
+                Margin = new Thickness(5),
+                Background = Brushes.White
+            };
+            _removeButton.Click += RemoveButton_Click;
+            mainPanel.Children.Add(_removeButton);
 
-var savingsGoalPanel = new WrapPanel
-{
-    Margin = new Thickness(5),
-    HorizontalAlignment = HorizontalAlignment.Center
-};
+            // Cel oszczędności
+            mainPanel.Children.Add(new TextBlock { Text = "Cel oszczędności:", Margin = new Thickness(5) });
 
-for (int i = 500; i <= 10000; i = i == 500 ? 1000 : i + 1000)
-{
-    var button = new Button
-    {
-        Content = $"{i} zł",
-        Tag = i,
-        Padding = new Thickness(5),
-        Width = 80,
-        Margin = new Thickness(5),
-        Background = i == _savingsGoal ? Brushes.LightBlue : Brushes.LightGray
-    };
+            var savingsGoalPanel = new WrapPanel
+            {
+                Margin = new Thickness(5),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
 
-    button.Click += (_, __) =>
-    {
-        _savingsGoal = Convert.ToDecimal(button.Tag);
+            for (int i = 500; i <= 10000; i = i == 500 ? 1000 : i + 1000)
+            {
+                var button = new Button
+                {
+                    Content = $"{i} zł",
+                    Tag = i,
+                    Padding = new Thickness(5),
+                    Width = 80,
+                    Margin = new Thickness(5),
+                    Background = i == _savingsGoal ? Brushes.LightBlue : Brushes.LightGray
+                };
 
-        foreach (var child in savingsGoalPanel.Children.OfType<Button>())
-            child.Background = Brushes.LightGray;
+                button.Click += (_, __) =>
+                {
+                    _savingsGoal = Convert.ToDecimal(button.Tag);
 
-        button.Background = Brushes.LightBlue;
-        UpdateBudgetInfo(); 
-    };
+                    foreach (var child in savingsGoalPanel.Children.OfType<Button>())
+                        child.Background = Brushes.LightGray;
 
-    savingsGoalPanel.Children.Add(button);
-}
+                    button.Background = Brushes.LightBlue;
+                    UpdateBudgetInfo();
+                    SaveDataToFile();
+                };
 
-mainPanel.Children.Add(savingsGoalPanel);
+                savingsGoalPanel.Children.Add(button);
+            }
 
-_savingsProgressText = new TextBlock
-{
-    Margin = new Thickness(5),
-    TextWrapping = TextWrapping.Wrap
-};
-mainPanel.Children.Add(_savingsProgressText);
+            mainPanel.Children.Add(savingsGoalPanel);
+
+            _savingsProgressText = new TextBlock
+            {
+                Margin = new Thickness(5),
+                TextWrapping = TextWrapping.Wrap
+            };
+            mainPanel.Children.Add(_savingsProgressText);
 
             // Wydatki w miesiącu
             _monthlyBalanceText = new TextBlock
@@ -222,12 +236,12 @@ mainPanel.Children.Add(_savingsProgressText);
                 Margin = new Thickness(5)
             };
             mainPanel.Children.Add(_monthlyBalanceText);
-    _categoryBreakdownText = new TextBlock
-    {
-    Margin = new Thickness(5),
-    TextWrapping = TextWrapping.Wrap
-    };
-    mainPanel.Children.Add(_categoryBreakdownText);
+            _categoryBreakdownText = new TextBlock
+            {
+                Margin = new Thickness(5),
+                TextWrapping = TextWrapping.Wrap
+            };
+            mainPanel.Children.Add(_categoryBreakdownText);
             // Błędy
             _errorTextBlock = new TextBlock
             {
@@ -263,7 +277,42 @@ mainPanel.Children.Add(_savingsProgressText);
 
             _selectedAmount = 0;
             UpdateBudgetInfo();
+            SaveDataToFile();
         }
+
+ private void RemoveButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        _errorTextBlock.Text = string.Empty;
+
+        if (_selectedAmount <= 0)
+        {
+            _errorTextBlock.Text = "Wybierz kwotę.";
+            return;
+        }
+
+        var category = _selectedCategory;
+        var monthKey = _selectedMonth;
+
+        if (_categoryAmounts.ContainsKey(category) && _categoryAmounts[category].ContainsKey(monthKey))
+        {
+            _categoryAmounts[category][monthKey] -= _selectedAmount;
+            if (_categoryAmounts[category][monthKey] <= 0)
+            {
+                _categoryAmounts[category].Remove(monthKey);
+            }
+            if (_categoryAmounts[category].Count == 0)
+            {
+                _categoryAmounts.Remove(category);
+            }
+            _selectedAmount = 0;
+            UpdateBudgetInfo();
+            SaveDataToFile();
+        }
+        else
+        {
+            _errorTextBlock.Text = "Brak takiej kwoty do usunięcia.";
+        }
+    }
 
         private void UpdateBudgetInfo()
         {
@@ -281,16 +330,62 @@ mainPanel.Children.Add(_savingsProgressText);
 
             _categoryBreakdownText.Text = string.Join("\n", breakdownLines);
 
-decimal totalSavings = 0;
+            decimal totalSavings = 0;
 
-if (_categoryAmounts.TryGetValue("Oszczędności", out var savingsByMonth))
-{
-    totalSavings = savingsByMonth.Values.Sum();
-}
+            if (_categoryAmounts.TryGetValue("Oszczędności", out var savingsByMonth))
+            {
+                totalSavings = savingsByMonth.Values.Sum();
+            }
 
-decimal percent = _savingsGoal > 0 ? Math.Min(100, (totalSavings / _savingsGoal) * 100) : 0;
+            decimal percent = _savingsGoal > 0 ? Math.Min(100, (totalSavings / _savingsGoal) * 100) : 0;
 
-_savingsProgressText.Text = $"Zebrano oszczędności: {totalSavings:C} / {_savingsGoal:C} ({percent:F1}%)";
+            _savingsProgressText.Text = $"Zebrano oszczędności: {totalSavings:C} / {_savingsGoal:C} ({percent:F1}%)";
+        }
+         public void SaveDataToFile(string filePath = "finanse_data.json")
+        {
+            var data = new Dictionary<string, object>
+            {
+                ["categoryAmounts"] = _categoryAmounts.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.ToDictionary(
+                        innerKvp => innerKvp.Key.ToString(),
+                        innerKvp => (double)innerKvp.Value
+                    )
+                ),
+                ["savingsGoal"] = (double)_savingsGoal
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            System.IO.File.WriteAllText(filePath, json);
+        }
+
+        public void LoadDataFromFile(string filePath = "finanse_data.json")
+        {
+            if (!System.IO.File.Exists(filePath))
+                return;
+
+            var json = System.IO.File.ReadAllText(filePath);
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            _categoryAmounts.Clear();
+            if (root.TryGetProperty("categoryAmounts", out var catAmountsElem))
+            {
+                foreach (var cat in catAmountsElem.EnumerateObject())
+                {
+                    var monthDict = new Dictionary<int, decimal>();
+                    foreach (var month in cat.Value.EnumerateObject())
+                    {
+                        monthDict[int.Parse(month.Name)] = month.Value.GetDecimal();
+                    }
+                    _categoryAmounts[cat.Name] = monthDict;
+                }
+            }
+
+            if (root.TryGetProperty("savingsGoal", out var savingsGoalElem))
+            {
+                _savingsGoal = savingsGoalElem.GetDecimal();
+            }
         }
     }
 } 
