@@ -217,7 +217,7 @@ sudo apt-get install -y dotnet-sdk-6.0
 1. **Klonowanie repozytorium:**
 ```bash
 git clone https://github.com/404PaulinaNotFound/P_IV.git
-cd test/FinanseApp
+cd P_IV/FinanseApp
 ```
 
 2. **Przywrócenie zależności:**
