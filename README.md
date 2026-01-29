@@ -181,7 +181,61 @@
 - **Git** - Kontrola wersji
 
 ---
+## Testowanie
 
+### Testy Jednostkowe
+
+Projekt zawiera zestaw testów jednostkowych weryfikujących kluczowe funkcjonalności aplikacji.
+
+#### Uruchomienie Testów
+
+```bash
+# Przejdź do katalogu z testami
+cd FinanseApp.Tests
+
+# Uruchom wszystkie testy
+dotnet test
+
+# Uruchom testy z raportowaniem szczegółów
+dotnet test --verbosity detailed
+```
+
+#### Pokrycie Testami
+
+Projekt testowy (`FinanseApp.Tests`) zawiera 4 testy jednostkowe pokrywające główne scenariusze:
+
+1. **Test dodawania wydatku** (`AddButton_Click_ShouldAddExpenseToCategory`)
+   - Weryfikuje poprawność dodawania kwoty do wybranej kategorii i miesiąca
+   - Sprawdza aktualizację słownika `_categoryAmounts`
+
+2. **Test walidacji** (`AddButton_Click_WithoutSelectedAmount_ShouldShowError`)
+   - Testuje walidację przed dodaniem wydatku
+   - Sprawdza wyświetlanie komunikatu błędu przy braku wybranej kwoty
+
+3. **Test obliczeń finansowych** (`UpdateBudgetInfo_ShouldCalculateMonthlyExpensesCorrectly`)
+   - Weryfikuje poprawność sumowania wydatków w wybranym miesiącu
+   - Testuje agregację danych z różnych kategorii
+
+4. **Test persystencji danych** (`SaveAndLoadData_ShouldPreserveData`)
+   - Sprawdza zapis i odczyt danych z pliku JSON
+   - Weryfikuje zachowanie wszystkich wartości po cyklu save/load
+
+#### Wymagane Pakiety dla Testów
+
+```bash
+# Instalacja w projekcie testowym
+cd FinanseApp.Tests
+dotnet add package xunit
+dotnet add package xunit.runner.visualstudio
+dotnet add package Microsoft.NET.Test.Sdk
+```
+
+#### Framework Testowy
+
+- **xUnit** - Framework do testów jednostkowych
+- **Reflection API** - Dostęp do prywatnych metod i pól (helper methods w `MainWindowTests`)
+
+---
 ## Proces Uruchomienia Projektu
 
 ### Wymagania Systemowe
